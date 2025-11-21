@@ -1,0 +1,24 @@
+Roll Number,Name,Branch,Semester,Subject,Marks
+CS101,Aarav Reddy,Computer Science,Semester 1,Mathematics,88
+CS101,Aarav Reddy,Computer Science,Semester 1,Physics,82
+CS101,Aarav Reddy,Computer Science,Semester 1,Programming in C,91
+CS102,Ananya Sharma,Computer Science,Semester 1,Mathematics,93
+CS102,Ananya Sharma,Computer Science,Semester 1,Physics,89
+CS102,Ananya Sharma,Computer Science,Semester 1,Programming in C,95
+CS103,Rohit Patel,Computer Science,Semester 1,Mathematics,76
+CS103,Rohit Patel,Computer Science,Semester 1,Physics,80
+CS103,Rohit Patel,Computer Science,Semester 1,Programming in C,74
+EC201,Meera Iyer,Electronics,Semester 1,Mathematics,85
+EC201,Meera Iyer,Electronics,Semester 1,Circuits,79
+EC201,Meera Iyer,Electronics,Semester 1,Signals and Systems,88
+EC202,Arjun Verma,Electronics,Semester 1,Mathematics,90
+EC202,Arjun Verma,Electronics,Semester 1,Circuits,84
+EC202,Arjun Verma,Electronics,Semester 1,Signals and Systems,81
+ME301,Diya Nair,Mechanical,Semester 1,Engineering Mechanics,73
+ME301,Diya Nair,Mechanical,Semester 1,Physics,78
+ME301,Diya Nair,Mechanical,Semester 1,Workshop Practice,86
+ME302,Krishna Menon,Mechanical,Semester 1,Engineering Mechanics,81
+ME302,Krishna Menon,Mechanical,Semester 1,Physics,75
+ME302,Krishna Menon,Mechanical,Semester 1,Workshop Practice,83
+CS0026,Sanjana,Computer Science , Semester2, DBMS,85
+CS0027,Siri,Computer Science, Semester 2 , DBMS,98

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Student Result System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #7c3aed;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .dashboard-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 1.5rem;
+        }
+        .semester-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+        .grade-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .grade-S { background-color: #10b981; color: white; }
+        .grade-A { background-color: #3b82f6; color: white; }
+        .grade-B { background-color: #06b6d4; color: white; }
+        .grade-C { background-color: #f59e0b; color: white; }
+        .grade-D { background-color: #f97316; color: white; }
+        .grade-E { background-color: #ef4444; color: white; }
+        .grade-F { background-color: #991b1b; color: white; }
+        .grade-AB { background-color: #6b7280; color: white; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-graduation-cap text-primary"></i> Student Results
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/dashboard"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/results"><i class="fas fa-table"></i> All Results</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/add_student"><i class="fas fa-user-plus"></i> Add Student</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/upload_results"><i class="fas fa-upload"></i> Upload File</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Statistics Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h3 class="mb-0">{{ total_students }}</h3>
+                            <p class="text-muted mb-0">Total Students</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h3 class="mb-0">{{ total_subjects }}</h3>
+                            <p class="text-muted mb-0">Total Subjects</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h3 class="mb-0">{{ total_semesters }}</h3>
+                            <p class="text-muted mb-0">Total Semesters</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="mb-3"><i class="fas fa-chart-pie text-primary"></i> Grade Distribution</h5>
+                    <canvas id="gradeChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="mb-3"><i class="fas fa-chart-bar text-success"></i> Subject-wise Performance</h5>
+                    <canvas id="subjectChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Semester Performance Chart -->
+        <div class="chart-container">
+            <h5 class="mb-3"><i class="fas fa-chart-line text-info"></i> Semester-wise Average Performance</h5>
+            <canvas id="semesterChart"></canvas>
+        </div>
+
+        <!-- Semester-wise Data Tables -->
+        {% for semester, students in semester_data.items() %}
+        <div class="semester-section">
+            <h4 class="mb-3"><i class="fas fa-calendar-check text-primary"></i> {{ semester }}</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Roll Number</th>
+                            <th>Name</th>
+                            <th>Subject</th>
+                            <th>Marks</th>
+                            <th>Grade</th>
+                            <th>Grade Point</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td><strong>{{ student.roll_number }}</strong></td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.subject }}</td>
+                            <td>{{ student.marks }}</td>
+                            <td><span class="grade-badge grade-{{ student.grade }}">{{ student.grade }}</span></td>
+                            <td>{{ student.grade_point }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fetch analytics data
+        fetch('/api/analytics')
+            .then(response => response.json())
+            .then(data => {
+                // Grade Distribution Chart
+                const gradeCtx = document.getElementById('gradeChart').getContext('2d');
+                new Chart(gradeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.grade_distribution.map(g => g.grade),
+                        datasets: [{
+                            data: data.grade_distribution.map(g => g.count),
+                            backgroundColor: ['#10b981', '#3b82f6', '#06b6d4', '#f59e0b', '#f97316', '#ef4444'],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+
+                // Subject Performance Chart
+                const subjectCtx = document.getElementById('subjectChart').getContext('2d');
+                new Chart(subjectCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.subject_averages.map(s => s.subject),
+                        datasets: [{
+                            label: 'Average Marks',
+                            data: data.subject_averages.map(s => s.avg_marks),
+                            backgroundColor: 'rgba(79, 70, 229, 0.8)',
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true, max: 100 }
+                        }
+                    }
+                });
+
+                // Semester Performance Chart
+                const semesterCtx = document.getElementById('semesterChart').getContext('2d');
+                new Chart(semesterCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.semester_performance.map(s => s.semester),
+                        datasets: [{
+                            label: 'Average Marks',
+                            data: data.semester_performance.map(s => s.avg_marks),
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true, max: 100 }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading analytics:', error));
+    </script>
+</body>
+</html>

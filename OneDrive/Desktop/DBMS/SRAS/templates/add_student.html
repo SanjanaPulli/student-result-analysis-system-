@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student - SRAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">📝 Add Student Record</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <form method="POST" action="/add_student">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Roll Number *</label>
+                                    <input type="text" name="roll_number" class="form-control" 
+                                           placeholder="e.g., CS101" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Student Name *</label>
+                                    <input type="text" name="name" class="form-control" 
+                                           placeholder="e.g., John Doe" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Branch *</label>
+                                    <select name="branch" class="form-select" required>
+                                        <option value="">Select Branch</option>
+                                        <option value="CSE">Computer Science (CSE)</option>
+                                        <option value="ECE">Electronics & Communication (ECE)</option>
+                                        <option value="EEE">Electrical & Electronics (EEE)</option>
+                                        <option value="ME">Mechanical Engineering (ME)</option>
+                                        <option value="CE">Civil Engineering (CE)</option>
+                                        <option value="IT">Information Technology (IT)</option>
+                                        <option value="AIDS">AI & Data Science (AIDS)</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Semester *</label>
+                                    <select name="semester" class="form-select" required>
+                                        <option value="">Select Semester</option>
+                                        <option value="Semester 1">Semester 1</option>
+                                        <option value="Semester 2">Semester 2</option>
+                                        <option value="Semester 3">Semester 3</option>
+                                        <option value="Semester 4">Semester 4</option>
+                                        <option value="Semester 5">Semester 5</option>
+                                        <option value="Semester 6">Semester 6</option>
+                                        <option value="Semester 7">Semester 7</option>
+                                        <option value="Semester 8">Semester 8</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Subject *</label>
+                                    <input type="text" name="subject" class="form-control" 
+                                           placeholder="e.g., Mathematics" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Marks *</label>
+                                    <input type="number" name="marks" class="form-control" 
+                                           min="-1" max="100" step="0.01" 
+                                           placeholder="0-100 (or -1 for absent)" required>
+                                    <small class="text-muted">Use -1 for absent students</small>
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Grading Type *</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="grading_type" 
+                                               id="absolute" value="absolute" checked>
+                                        <label class="form-check-label" for="absolute">
+                                            <strong>Absolute Grading</strong> - Based on fixed mark ranges
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="grading_type" 
+                                               id="relative" value="relative">
+                                        <label class="form-check-label" for="relative">
+                                            <strong>Relative Grading</strong> - Based on class performance (Branch-wise)
+                                        </label>
+                                    </div>
+                                    <small class="text-info">
+                                        ℹ️ Relative grading compares students within the same Branch-Semester-Subject only
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    ✅ Add Student Record
+                                </button>
+                                <a href="/dashboard" class="btn btn-secondary">
+                                    ← Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+
+                        <!-- Grading Info -->
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h6>📊 Grading System Reference</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Absolute Grading:</strong>
+                                    <ul class="small">
+                                        <li>S: 90-100 (10 GP)</li>
+                                        <li>A: 80-89 (9 GP)</li>
+                                        <li>B: 70-79 (8 GP)</li>
+                                        <li>C: 60-69 (7 GP)</li>
+                                        <li>D: 50-59 (6 GP)</li>
+                                        <li>E: 40-49 (5 GP)</li>
+                                        <li>F: Below 40 (0 GP)</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Relative Grading:</strong>
+                                    <ul class="small">
+                                        <li>Top 10% → S (10 GP)</li>
+                                        <li>Next 15% → A (9 GP)</li>
+                                        <li>Next 25% → B (8 GP)</li>
+                                        <li>Next 25% → C (7 GP)</li>
+                                        <li>Next 15% → D (6 GP)</li>
+                                        <li>Next 10% → E (5 GP)</li>
+                                        <li>Bottom → F (0 GP)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

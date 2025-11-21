@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Results - Student Result System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .results-container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .results-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .filter-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        .filter-select {
+            border-radius: 10px;
+            border: 2px solid white;
+            background: rgba(255,255,255,0.9);
+        }
+        .grade-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .grade-S { background-color: #10b981; color: white; }
+        .grade-A { background-color: #3b82f6; color: white; }
+        .grade-B { background-color: #06b6d4; color: white; }
+        .grade-C { background-color: #f59e0b; color: white; }
+        .grade-D { background-color: #f97316; color: white; }
+        .grade-E { background-color: #ef4444; color: white; }
+        .grade-F { background-color: #991b1b; color: white; }
+        .grade-AB { background-color: #6b7280; color: white; }
+        .table-hover tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        .btn-filter {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            border: none;
+        }
+        .btn-filter:hover {
+            background: rgba(255,255,255,0.9);
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-graduation-cap text-primary"></i> Student Results
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.role == 'admin' %}
+                    <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/results"><i class="fas fa-table"></i> All Results</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/add_student"><i class="fas fa-user-plus"></i> Add Student</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/upload_results"><i class="fas fa-upload"></i> Upload File</a></li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link active" href="/results"><i class="fas fa-table"></i> Results</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link text-danger" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="results-container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Advanced Filters -->
+        <div class="filter-card">
+            <h5 class="mb-3"><i class="fas fa-filter"></i> Filter Results</h5>
+            <form method="GET" action="/results" id="filterForm">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Semester</label>
+                        <select name="semester" class="form-select filter-select">
+                            <option value="">All Semesters</option>
+                            {% for sem in semesters %}
+                            <option value="{{ sem }}" {% if sem == current_semester %}selected{% endif %}>{{ sem }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Subject</label>
+                        <select name="subject" class="form-select filter-select">
+                            <option value="">All Subjects</option>
+                            {% for subj in subjects %}
+                            <option value="{{ subj }}" {% if subj == current_subject %}selected{% endif %}>{{ subj }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Branch</label>
+                        <select name="branch" class="form-select filter-select">
+                            <option value="">All Branches</option>
+                            {% for br in branches %}
+                            <option value="{{ br }}" {% if br == current_branch %}selected{% endif %}>{{ br }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-filter w-100 me-2">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                        <a href="/results" class="btn btn-outline-light">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-list-alt text-primary"></i> Student Results</h2>
+                    {% if current_semester or current_subject or current_branch %}
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-filter"></i> Filtered by: 
+                        {% if current_semester %}<span class="badge bg-primary">{{ current_semester }}</span>{% endif %}
+                        {% if current_subject %}<span class="badge bg-success">{{ current_subject }}</span>{% endif %}
+                        {% if current_branch %}<span class="badge bg-info">{{ current_branch }}</span>{% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+                <div>
+                    <button class="btn btn-success" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> Export to Excel
+                    </button>
+                </div>
+            </div>
+
+            {% if data %}
+            <div class="table-responsive">
+                <table id="resultsTable" class="table table-hover table-striped">
+                    <thead class="table-primary">
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> Roll No</th>
+                            <th><i class="fas fa-user"></i> Name</th>
+                            <th><i class="fas fa-building"></i> Branch</th>
+                            <th><i class="fas fa-calendar"></i> Semester</th>
+                            <th><i class="fas fa-book"></i> Subject</th>
+                            <th><i class="fas fa-chart-bar"></i> Marks</th>
+                            <th><i class="fas fa-medal"></i> Grade</th>
+                            <th><i class="fas fa-star"></i> GP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in data %}
+                        <tr>
+                            <td><strong>{{ student.roll_number }}</strong></td>
+                            <td>{{ student.name }}</td>
+                            <td><span class="badge bg-secondary">{{ student.branch }}</span></td>
+                            <td>{{ student.semester }}</td>
+                            <td>{{ student.subject }}</td>
+                            <td>{{ student.marks }}</td>
+                            <td><span class="grade-badge grade-{{ student.grade }}">{{ student.grade }}</span></td>
+                            <td>{{ student.grade_point }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h4>No Results Found</h4>
+                <p class="text-muted">No student results match your filter criteria.</p>
+                <a href="/results" class="btn btn-primary mt-3">
+                    <i class="fas fa-redo"></i> Clear Filters
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#resultsTable').DataTable({
+                pageLength: 25,
+                order: [[3, 'asc'], [2, 'asc'], [0, 'asc']],
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ results",
+                    infoEmpty: "No results available",
+                    infoFiltered: "(filtered from _MAX_ total)"
+                }
+            });
+        });
+
+        function exportToExcel() {
+            const table = document.getElementById('resultsTable');
+            const wb = XLSX.utils.table_to_book(table, {sheet: "Results"});
+            
+            const filters = [];
+            {% if current_semester %}filters.push('{{ current_semester }}');{% endif %}
+            {% if current_subject %}filters.push('{{ current_subject }}');{% endif %}
+            {% if current_branch %}filters.push('{{ current_branch }}');{% endif %}
+            
+            const filename = filters.length > 0 
+                ? `results_${filters.join('_')}.xlsx` 
+                : 'student_results.xlsx';
+            
+            XLSX.writeFile(wb, filename);
+        }
+    </script>
+</body>
+</html>

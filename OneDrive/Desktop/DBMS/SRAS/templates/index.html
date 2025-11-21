@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Result Analysis System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        .hero-content {
+            max-width: 900px;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            opacity: 0.95;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .btn-get-started {
+            background: white;
+            color: #667eea;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-get-started:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            color: #667eea;
+        }
+        .features-section {
+            padding: 4rem 0;
+        }
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="hero-content">
+            <i class="fas fa-graduation-cap" style="font-size: 5rem; margin-bottom: 2rem;"></i>
+            <h1 class="hero-title">Student Result Analysis System</h1>
+            <p class="hero-subtitle">
+                Streamline your academic result management with powerful analytics and insights
+            </p>
+            
+            <div class="mb-5">
+                <a href="/login" class="btn btn-get-started me-3">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/add_user" class="btn btn-get-started">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            </div>
+
+            <div class="features-section">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-cloud-upload-alt feature-icon"></i>
+                            <h4>Bulk Upload</h4>
+                            <p class="text-muted">Import student results from Excel/CSV files with ease</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-chart-line feature-icon"></i>
+                            <h4>Analytics Dashboard</h4>
+                            <p class="text-muted">Visual insights with interactive charts and statistics</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-shield-alt feature-icon"></i>
+                            <h4>Secure Access</h4>
+                            <p class="text-muted">Role-based authentication for data security</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mt-2">
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-calculator feature-icon"></i>
+                            <h4>Auto Grading</h4>
+                            <p class="text-muted">Automatic grade calculation with customizable criteria</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-file-excel feature-icon"></i>
+                            <h4>Export Reports</h4>
+                            <p class="text-muted">Download results in Excel format for sharing</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card">
+                            <i class="fas fa-mobile-alt feature-icon"></i>
+                            <h4>Responsive Design</h4>
+                            <p class="text-muted">Access from any device - desktop, tablet, or mobile</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-5" style="opacity: 0.8;">
+                <p><i class="fas fa-code"></i> Built with Flask, MySQL, Bootstrap & Chart.js</p>
+                <p>&copy; 2024 Student Result Analysis System. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
